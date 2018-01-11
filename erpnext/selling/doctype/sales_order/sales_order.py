@@ -826,3 +826,8 @@ def get_default_bom_item(item_code):
 	bom = bom[0].name if bom else None
 
 	return bom
+#quick-repair
+@frappe.whitelist()
+def update_workflow_status(doctype, docname,value_to_set):
+	return frappe.db.set_value(doctype, docname, "workflow_state", value_to_set)
+#quick-repair

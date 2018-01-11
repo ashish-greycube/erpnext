@@ -430,6 +430,25 @@ erpnext.selling.SalesOrderController = erpnext.selling.SellingController.extend(
 		});
 	},
 	on_submit: function(doc, cdt, cdn) {
+//quick-repair
+		var linked_quotation_name = doc.items[0].prevdoc_docname;
+		if (linked_quotation_name) {
+		    var so_workflow_state = doc.workflow_state;
+    		if (so_workflow_state) {
+        		frappe.call({
+            		method: "erpnext.selling.doctype.sales_order.sales_order.update_workflow_status",
+            		args: {
+                	doctype: "Quotation",
+                	docname: linked_quotation_name,
+                	value_to_set: so_workflow_state
+            		},
+            		callback(r) {
+                		//success 
+		            }
+        		});
+    		}
+		}
+//quick-repair
 		if(cint(frappe.boot.notification_settings.sales_order)) {
 			this.frm.email_doc(frappe.boot.notification_settings.sales_order_message);
 		}
