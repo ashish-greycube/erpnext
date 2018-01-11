@@ -78,7 +78,24 @@
 		</div>
 		</div>
 		</div>
+<!-- 		quickrepair -->
+		{% if repair_item_specification -%}
+		<div class="row repair-item-specification" style="margin-top: 40px">
+			<div class="col-md-12">
+				<div class="h6 text-uppercase">{{ _("Repair List") }}</div>
 
+				<table class="table borderless" style="width: 100%">
+				{% for d in repair_item_specification -%}
+					<tr>
+						<td class="text-muted" style="width: 30%;">{{ d.item }}</td>
+						<td>{{ d.price }}</td>
+					</tr>
+				{%- endfor %}
+				</table>
+			</div>
+		</div>
+		{%- endif %}
+<!-- 		quickrepair -->
 		{% if website_specifications -%}
 		<div class="row item-website-specification" style="margin-top: 40px">
 			<div class="col-md-12">
