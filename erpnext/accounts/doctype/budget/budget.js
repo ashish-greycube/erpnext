@@ -1,8 +1,19 @@
 // Copyright (c) 2016, Frappe Technologies Pvt. Ltd. and contributors
 // For license information, please see license.txt
 
+frappe.ui.form.on("Budget Account", "account", function(frm, cdt, cdn){
+	frm.refresh_fields();
+})
+frappe.ui.form.on("Budget Account", "budget_amount", function(frm, cdt, cdn){
+	frm.refresh_fields();
+})
+
+
 frappe.ui.form.on('Budget', {
 	onload: function(frm) {
+// #client: saudiflexsoft task:monthly budget in amount
+		$(".grid-add-row").hide();
+// #client: saudiflexsoft task:monthly budget in amount
 		frm.set_query("cost_center", function() {
 			return {
 				filters: {
@@ -37,6 +48,24 @@ frappe.ui.form.on('Budget', {
 			}
 		})
 	},
+
+// #client: saudiflexsoft task:monthly budget in amount
+	monthly_distribution:function(frm){		
+		if (frm.doc.monthly_distribution==undefined) {
+			if((frm.doc.accounts[0].budget_amount!=undefined)&&(frm.doc.fiscal_year!=undefined)&&(frm.doc.accounts[0].account!=undefined)) {
+				frappe.session.parent_budget_amount= frm.doc.accounts[0].budget_amount	
+				frappe.session.parent_budget_account=frm.doc.accounts[0].account
+				frappe.session.parent_fiscal_year=frm.doc.fiscal_year
+			}else
+			{				
+	            frappe.msgprint(__("Please fill mandatory fields"));
+	            throw "cannot create";
+	            validated = false;
+	            return false
+			}
+		}
+	},
+// #client: saudiflexsoft task:monthly budget in amount
 
 	refresh: function(frm) {
 		frm.trigger("toggle_reqd_fields")
