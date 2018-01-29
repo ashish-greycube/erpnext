@@ -27,20 +27,21 @@ class Budget(Document):
 	def validate_duplicate(self):
 		budget_against_field = frappe.scrub(self.budget_against)
 		budget_against = self.get(budget_against_field)
+#client: saudiflexsoft task:monthly budget in amount
 		# get existing 'budget' doctype
 		for existing_budget in frappe.db.get_values("Budget", {budget_against_field: budget_against,
 			"fiscal_year": self.fiscal_year, "company": self.company,
 			"name": ["!=", self.name], "docstatus": ["!=", 2]},["name"], as_dict=1):
 			# get 'budget account' child table for existing budget doctype
 			for budget_account_details in frappe.db.get_values("Budget Account",
-			{"parent": existing_budget.name,"parenttype":"Budget"}, ["account"], as_dict=1):	
+			{"parent": existing_budget.name,"parenttype":"Budget"}, ["account"], as_dict=1):
 				if budget_account_details.account:
 					# get 'account' from current doctype
 					for present_account in self.get('accounts'):
 						if present_account.account == budget_account_details.account:
 							frappe.throw(_("Another Budget record '{0}' already exists against {1} '{2}' for account '{3}' & fiscal year {4}")
 								.format(existing_budget.name, self.budget_against, budget_against, present_account.account,self.fiscal_year), DuplicateBudgetError)
-	
+#client: saudiflexsoft task:monthly budget in amount	
 	
 	def validate_accounts(self):
 		account_list = []

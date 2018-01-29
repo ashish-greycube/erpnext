@@ -1,13 +1,13 @@
 // Copyright (c) 2016, Frappe Technologies Pvt. Ltd. and contributors
 // For license information, please see license.txt
-
+// #client: saudiflexsoft task:monthly budget in amount
 frappe.ui.form.on("Budget Account", "account", function(frm, cdt, cdn){
 	frm.refresh_fields();
 })
 frappe.ui.form.on("Budget Account", "budget_amount", function(frm, cdt, cdn){
 	frm.refresh_fields();
 })
-
+// #client: saudiflexsoft task:monthly budget in amount
 
 frappe.ui.form.on('Budget', {
 	onload: function(frm) {
