@@ -27,7 +27,21 @@ frappe.treeview_settings["Account"] = {
 		{fieldtype:'Data', fieldname:'account_number', label:__('Account Number'),
 			description: __("Number of new Account, it will be included in the account name as a prefix")},
 		{fieldtype:'Check', fieldname:'is_group', label:__('Is Group'),
-			description: __('Further accounts can be made under Groups, but entries can be made against non-Groups')},
+		//auto account number
+		onchange: () => {			
+				frappe.call({
+					method: "erpnext.accounts.utils.get_new_account_number",
+					args: {
+						account_name: cur_tree.get_selected_node().label,						
+						is_group: cur_dialog.get_value("is_group")
+					},
+					callback: function(r, rt) {
+						cur_dialog.set_value("account_number",r.message)
+						
+					}
+				});
+//auto account number
+				},description: __('Further accounts can be made under Groups, but entries can be made against non-Groups')},
 		{fieldtype:'Select', fieldname:'root_type', label:__('Root Type'),
 			options: ['Asset', 'Liability', 'Equity', 'Income', 'Expense'].join('\n'),
 			depends_on: 'eval:doc.is_group && !doc.parent_account'},

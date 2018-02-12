@@ -130,7 +130,11 @@ class Account(NestedSet):
 			throw(_("Account with existing transaction cannot be converted to ledger"))
 		else:
 			self.is_group = 0
+			#auto account number
+			self.account_number=None
+			#auto account number
 			self.save()
+			
 			return 1
 
 	def convert_ledger_to_group(self):
@@ -140,6 +144,9 @@ class Account(NestedSet):
 			throw(_("Cannot covert to Group because Account Type is selected."))
 		else:
 			self.is_group = 1
+			#auto account number
+			self.account_number=None
+			#auto account number
 			self.save()
 			return 1
 

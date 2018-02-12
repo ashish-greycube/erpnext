@@ -11,6 +11,8 @@ from frappe.utils import formatdate, get_number_format_info
 
 # imported to enable erpnext.accounts.utils.get_account_currency
 from erpnext.accounts.doctype.account.account import get_account_currency
+#auto account number
+from erpnext.accounts.doctype.account.account import update_account_number
 
 class FiscalYearError(frappe.ValidationError): pass
 
@@ -664,7 +666,9 @@ def get_companies():
 @frappe.whitelist()
 def get_children(doctype, parent, company, is_root=False):
 	from erpnext.accounts.report.financial_statements import sort_root_accounts
-
+#auto account number
+	generate_account_number(doctype, parent, company, is_root)
+#auto account number
 	fieldname = frappe.db.escape(doctype.lower().replace(' ','_'))
 	doctype = frappe.db.escape(doctype)
 
@@ -700,7 +704,6 @@ def get_children(doctype, parent, company, is_root=False):
 
 			if each.account_currency != company_currency:
 				each["balance_in_account_currency"] = flt(get_balance_on(each.get("value")))
-
 	return acc
 
 def create_payment_gateway_account(gateway):
@@ -744,3 +747,164 @@ def create_payment_gateway_account(gateway):
 	except frappe.DuplicateEntryError:
 		# already exists, due to a reinstall?
 		pass
+
+#auto account number
+@frappe.whitelist()
+def get_new_account_number(account_name,is_group=1):
+	#child_seed=0
+	leaf_seed=0
+	parent_account = frappe.db.get_value("Account", account_name, "parent_account")
+	last_acct_num = frappe.get_all('Account',fields=['account_number'], filters={'parent_account': account_name,'is_group':int(is_group)},order_by='account_number desc', limit=1)
+	if (last_acct_num):
+		last_acct_num=last_acct_num[0]['account_number']
+
+	account_number = frappe.db.get_value("Account", account_name, "account_number")
+	leaf_node_count=frappe.db.count('Account', filters={'parent_account': parent_account,'is_group':0})
+	#child
+	if (is_group=='1'):
+		if (last_acct_num != None and last_acct_num !='' and last_acct_num !=[]):
+			child_seed=(int(last_acct_num) % 10)+1
+		
+		else:
+			child_seed=1
+		new_account_number=str(account_number)+str(child_seed)
+		return new_account_number
+	
+	#leaf
+	if (is_group=='0'):
+		if (last_acct_num != None and last_acct_num !='' and last_acct_num !=[]):
+			if (leaf_node_count>9):
+				str_num=str(last_acct_num)
+				if (str_num.endswith('0',len(str_num)-2,len(str_num)-1)):
+					leaf_seed=(int(last_acct_num) % 10)+1
+					new_account_number=str(account_number)+str("{0:0>2}".format(leaf_seed))
+				else:
+					leaf_seed=(int(last_acct_num) % 100)+1
+					new_account_number=str(account_number)+str(leaf_seed)						
+			else:
+				leaf_seed=(int(last_acct_num) % 10)+1
+				new_account_number=str(account_number)+str("{0:0>2}".format(leaf_seed))
+		else:
+			leaf_seed=1
+			new_account_number=str(account_number)+str("{0:0>2}".format(leaf_seed))	
+		frappe.errprint(new_account_number)
+		return new_account_number
+
+
+
+
+@frappe.whitelist()
+def generate_account_number(doctype, parent, company, is_root=False):
+	from erpnext.accounts.report.financial_statements import sort_root_accounts
+
+	fieldname = frappe.db.escape(doctype.lower().replace(' ','_'))
+	doctype = frappe.db.escape(doctype)
+
+	# root
+	if is_root:
+		fields = ", root_type, report_type, account_currency" if doctype=="Account" else ""
+		acc = frappe.db.sql(""" select
+			name as value, is_group as expandable {fields}
+			from `tab{doctype}`
+			where ifnull(`parent_{fieldname}`,'') = ''
+			and `company` = %s	and docstatus<2
+			order by name""".format(fields=fields, fieldname = fieldname, doctype=doctype),
+				company, as_dict=1)
+
+		if parent=="Accounts":
+			sort_root_accounts(acc)
+	else:
+		# other
+		fields = ", account_currency" if doctype=="Account" else ""
+		acc = frappe.db.sql("""select
+			name as value, is_group as expandable, parent_{fieldname} as parent {fields}
+			from `tab{doctype}`
+			where ifnull(`parent_{fieldname}`,'') = %s
+			and docstatus<2
+			order by name""".format(fields=fields, fieldname=fieldname, doctype=doctype),
+				parent, as_dict=1)
+
+	
+#auto account number
+	root_seed=0
+	child_seed=0
+	leaf_seed=0
+	last_acct_num=0
+
+	for each in acc:
+		parent_account = frappe.db.get_value("Account", each.get("value"), "parent_account")
+		parent_acct_num=frappe.db.get_value("Account", parent_account, "account_number")
+		account_number = frappe.db.get_value("Account", each.get("value"), "account_number")
+		#account_number = frappe.db.get_value("Account", each.get("value"), "account_number")
+
+		#root
+		if ((parent_account == None) and (each.get("expandable") == 1) ):
+			if (account_number==None or account_number==''):
+				account_name=frappe.db.get_value("Account", each.get("value"), "account_name")
+				if (account_name=='Application of Funds (Assets)'):
+					root_seed=1
+				elif (account_name=='Source of Funds (Liabilities)'):
+					root_seed=2
+				elif (account_name=='Equity'):
+					root_seed=3
+				elif (account_name=='Income'):
+					root_seed=4
+				elif (account_name=='Expenses'):
+					root_seed=5
+	
+				#frappe.db.set_value('Account',each.get("value"),'account_number',root_seed)
+				update_account_number(each.get("value"),root_seed)
+		#child
+		if ((parent_account != None) and (each.get("expandable") == 1) ):
+			last_acct_num = frappe.get_all('Account',fields=['account_number'], filters={'parent_account': parent_account,'is_group':1},order_by='account_number desc', limit=1)[0]['account_number']
+			
+
+			if (account_number==None or account_number==''):
+				if (last_acct_num != None and last_acct_num !='' ):
+					child_seed=(int(last_acct_num) % 10)+1
+				
+				else:
+					child_seed=1
+				new_account_number=str(parent_acct_num)+str(child_seed)
+
+				account_with_same_number = frappe.db.get_value("Account",
+												{"account_number": new_account_number, "company": company, "name": ["!=", each.get("value")]})
+				if account_with_same_number:
+				 	child_seed=child_seed+1
+					new_account_number=str(parent_acct_num)+str(child_seed)				
+				
+				#frappe.db.set_value('Account',each.get("value"),'account_number',new_account_number)
+				update_account_number(each.get("value"),new_account_number)
+
+		#leaf
+		if ((parent_account != None) and (each.get("expandable") == 0) ):
+			last_acct_num = frappe.get_all('Account',fields=['account_number'], filters={'parent_account': parent_account,'is_group':0},order_by='account_number desc', limit=1)[0]['account_number']
+			leaf_node_count=frappe.db.count('Account', filters={'parent_account': parent_account,'is_group':0})
+			if (account_number==None  or account_number==''):
+				if (last_acct_num != None and last_acct_num !=''):
+					if (leaf_node_count>9):
+						str_num=str(last_acct_num)
+						if (str_num.endswith('0',len(str_num)-2,len(str_num)-1)):
+							leaf_seed=(int(last_acct_num) % 10)+1
+							new_account_number=str(parent_acct_num)+str("{0:0>2}".format(leaf_seed))
+						else:
+							leaf_seed=(int(last_acct_num) % 100)+1
+							new_account_number=str(parent_acct_num)+str(leaf_seed)						
+					else:
+						leaf_seed=(int(last_acct_num) % 10)+1
+						new_account_number=str(parent_acct_num)+str("{0:0>2}".format(leaf_seed))
+				else:
+					leaf_seed=1
+					new_account_number=str(parent_acct_num)+str("{0:0>2}".format(leaf_seed))
+				
+				account_with_same_number = frappe.db.get_value("Account",
+												{"account_number": new_account_number, "company": company, "name": ["!=", each.get("value")]})
+				if account_with_same_number:
+				 	leaf_seed=leaf_seed+1				
+					new_account_number=str(parent_acct_num)+str("{0:0>2}".format(leaf_seed))	
+
+				#frappe.db.set_value('Account',each.get("value"),'account_number',new_account_number)
+				update_account_number(each.get("value"),new_account_number)		
+
+	#auto account number	 	
+	return acc
