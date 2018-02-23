@@ -430,6 +430,14 @@ erpnext.selling.SalesOrderController = erpnext.selling.SellingController.extend(
 		});
 	},
 	on_submit: function(doc, cdt, cdn) {
+
+		if(cint(frappe.boot.notification_settings.sales_order)) {
+			this.frm.email_doc(frappe.boot.notification_settings.sales_order_message);
+		}
+	},
+
+//quick-repair
+	validate: function(doc, cdt, cdn) {
 //quick-repair
 		var linked_quotation_name = doc.items[0].prevdoc_docname;
 		if (linked_quotation_name) {
@@ -449,10 +457,8 @@ erpnext.selling.SalesOrderController = erpnext.selling.SellingController.extend(
     		}
 		}
 //quick-repair
-		if(cint(frappe.boot.notification_settings.sales_order)) {
-			this.frm.email_doc(frappe.boot.notification_settings.sales_order_message);
-		}
-	},
+},
+
 
 	items_add: function(doc, cdt, cdn) {
 		var row = frappe.get_doc(cdt, cdn);

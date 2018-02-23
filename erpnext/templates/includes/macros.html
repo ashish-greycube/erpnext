@@ -10,6 +10,18 @@
 </div>
 {% endmacro %}
 
+<!-- quickrepair -->
+{% macro product_image_qr(website_image, css_class="") %}
+{% if website_image -%}
+	<img class="img-responsive lazyloaded" alt="Product Repair" src="{{ frappe.utils.quoted(website_image) | abs_url }}">
+{%- endif %}
+{% if not website_image -%}
+<div class="product-image product-image-square missing-image"></div>
+{%- endif %}
+{% endmacro %}
+
+<!-- quickrepair -->
+
 {% macro product_image(website_image, css_class="") %}
     <div class="product-image {% if not website_image -%} missing-image {%- endif %} {{ css_class }}">
     	{% if website_image -%}

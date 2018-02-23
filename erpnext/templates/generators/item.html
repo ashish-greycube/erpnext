@@ -8,22 +8,100 @@
 
 {% block page_content %}
 {% from "erpnext/templates/includes/macros.html" import product_image %}
-<div class="item-content" style="margin-top:20px;">
+
+<div class="item-content phone-section" style="margin-top:20px;">
 	<div class="product-page-content" itemscope itemtype="http://schema.org/Product">
 		<div class="row">
-			<div class="col-sm-6">
+		   <!--<div class="col-sm-6"> -->
+			<div class=" col-sm-4 col-md-3 "> <!-- quickrepair: width change 6 to 3 -->
 				{% if slideshow %}
 					{% include "templates/includes/slideshow.html" %}
 				{% else %}
 					{{ product_image(website_image, "product-full-image") }}
 				{% endif %}
 			</div>
-			<div class="col-sm-6" style="padding-left:20px;">
-				 <h2 itemprop="name" style="margin-top: 0px;">{{ item_name }}</h2>
+			<!-- <div class="col-sm-6" style="padding-left:20px;"> -->
+			<div class="col-sm-8 col-md-6" > <!-- quickrepair: remove padding-->
+
+				 <!--<h2 itemprop="name" style="margin-top: 0px;">{{ item_name }}</h2> -->
+				 <h1 itemprop="name" style="margin-top: 0px;">{{ item_name }}</h1> <!-- quickrepair: change h2 to h1-->
 
 				<p class="text-muted">
 					{{ _("Item Code") }}: <span itemprop="productID">{{ variant and variant.name or name }}</span></p>
-				<br>
+                
+                
+                <!-- quickrepair: add form + List service start html-->  
+
+				<div class="tab1">
+<!-- 		quickrepair -->
+				{% if repair_item_specification -%}
+					<div itemprop_repair="repairs" itemscope itemtype="http://schema.org/Repair">
+						
+					
+				<div class=" repair-item-specification" style="margin-top: 0px">
+						<table class="table table-hover table-responsive table-striped" >
+							<thead>
+					            <tr>
+					              <th>{{ _("Herstelling") }}</th>
+					              <th>Prijs</th>
+					              <th></th>
+					            </tr>
+					          </thead>
+					          <tbody> 
+						{% for d in repair_item_specification -%}
+							<tr>
+<td itemprop_repair="productID{{ d.idx }}" >{{ d.repair_item }}</td>						 
+								<td><h4 class="item_repair-price{{ d.idx }}" itemprop_repair="price"></h4></td>
+								<td><a class="signup" onClick="nextPrev('{{ d.repair_item }}')"><i class="fa fa-arrow-circle-right"></i></a></td>
+							</tr>
+						{%- endfor %}
+						    </tbody>
+						</table>
+				</div>
+				</div>
+				{%- endif %}
+		<!-- 		quickrepair -->
+               </div>  
+
+               <div class="tab2" style="display:none;">
+               	    <div id="form-alert" class="" style=" margin-bottom: 14px; "></div>
+                    <a class="btn btn-default float-left" onClick="prevback()"> << Terug</a>
+			        <div class="form-group">
+			          <label for="name">Naam </label>
+			          <input type="text" class="form-control" id="name" placeholder="Naam">
+			        </div>
+			        <div class="form-group">
+			          <label for="email">Uw Email</label>
+			          <input type="text" class="form-control" id="email" placeholder="Vul uw email in">
+			        </div>
+			        <div class="form-group">
+			          <label for="phone">Telefoon</label>
+			          <input type="text" class="form-control" id="phone" placeholder="Telefoon">
+			        </div>
+			        <div class="form-group">
+			          <label for="repair">Welke herstelling?</label>
+			          <input type="text" class="form-control" id="repair" readonly="readonly" placeholder="Welke herstelling?">
+			        </div>
+			        <div class="form-group">
+			          <label for="store">Welke winkel wilt u langskomen?</label>
+			          <select id="store" class="form-control">
+			            <option value="vs">Vlaanderenstraat 117, 9000 Gent</option>
+			          </select>
+			        </div>
+			        <div class="form-group">
+			          <label for="message">Uw vraag of opmerking</label>
+			          <textarea class="form-control" id="message" rows="4" placeholder="Uw vraag of opmerking"></textarea>
+			        </div>
+			        <div class="form-group">
+			          <label for="date">Datum</label>
+			          <input type="text" class="form-control" id="date" placeholder="dd.mm.yyyy">
+                    </div>
+			        <button type="submit" class="btn btn-primary btn-orange">Verzenden</button>
+			        <a class="btn btn-default" onClick="prevback()">Terug</a> 
+			    </div>
+              
+                <!-- quickrepair: add form + List service end html--> 
+
 				<div class="item-attribute-selectors">
 					{% if has_variants %}
 					{% for d in attributes %}
@@ -51,7 +129,7 @@
 					{% endif %}
 				</div>
 				<br>
-				<div style="min-height: 100px; margin: 10px 0;">
+				<div style="min-height: 0px; margin: 10px 0;">
 					<div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
 						<h4 class="item-price" itemprop="price"></h4>
 						<div class="item-stock" itemprop="availability"></div>
@@ -69,33 +147,53 @@
 					</div>
 				</div>
 			</div>
+			<!-- quickrepair: add side-section start html-->
+            <div class=" col-sm-12 col-md-3">
+			      <div class="bg-grey">
+			        <div class=" block-block-3">
+			          <!--<p><strong>Why register a device?</strong></p>-->
+			          <ul>
+			            <li>Klaar terwijl u wacht</li>
+			            <li>Uw toestel als nieuw terug</li>
+			          </ul>
+			          <p><strong>Bij Quick Repair altijd:</strong></p>
+			          <ul class="secondstyle">
+			            <li>1 jaar garantie</li>
+			            <li>Scherp geprijsd</li>
+			            <li>Snel & vakkundig</li>
+			          </ul>
+			        </div>
+			      </div>
+			 </div>
+			<!-- quickrepair: add side-section end html-->
+			
 		</div>
-		<div class="row item-website-description" style="margin-top:30px; margin-bottom:20px">
+		<!-- quickrepair: add section2 start html-->
+		<section class="custom  phone-section">
+		  <div class="row">
+			<div class=" col-sm-12 col-md-12 ">
+			  <h2 class="block-title"><span><img src="/files/icon-chat.png" /></span> <br /> U weet niet wat er mankeert aan uw toestel ? <br /> Kom dan gerust langs of chat nu met onze repair medewerker!</h2>
+              
+			  <!--<ol class="number-sec">
+				<li>You print the registration form and complete it.</li>
+				<li>You send the device together with the form with Bpost or another courier service. </li>
+				<li>When the device arrives in our store, we carry out the repair immediately. </li>
+				<li>After the repair we will send you the recovery voucher or invoice via e-mail. You can make the payment via Pay-Pal or bank transfer. As soon as we have received the payment, the device will be sent.</li>
+			  </ol>-->
+			</div>
+		  </div>
+		</section>
+		<!-- quickrepair: add section2 end html-->
+	
+		<!-- <div class="row item-website-description" style="margin-top:30px; margin-bottom:20px">
 			<div class="col-md-12">
 		<div class="h6 text-uppercase">{{ _("Description") }}</div>
 		<div itemprop="description" class="item-desc">
 		{{ web_long_description or description or _("No description given") }}
 		</div>
 		</div>
-		</div>
-<!-- 		quickrepair -->
-		{% if repair_item_specification -%}
-		<div class="row repair-item-specification" style="margin-top: 40px">
-			<div class="col-md-12">
-				<div class="h6 text-uppercase">{{ _("Repair List") }}</div>
+		</div> -->
 
-				<table class="table borderless" style="width: 100%">
-				{% for d in repair_item_specification -%}
-					<tr>
-						<td class="text-muted" style="width: 30%;">{{ d.item }}</td>
-						<td>{{ d.price }}</td>
-					</tr>
-				{%- endfor %}
-				</table>
-			</div>
-		</div>
-		{%- endif %}
-<!-- 		quickrepair -->
 		{% if website_specifications -%}
 		<div class="row item-website-specification" style="margin-top: 40px">
 			<div class="col-md-12">
@@ -114,7 +212,186 @@
 		{%- endif %}
 	</div>
 </div>
+<!-- quickrepair: add css start-->
+<style>
+@import url("/assets/frappe/js/lib/datepicker/datepicker.min.css");
+
+.page-container{max-width: 100%;}
+.page-container .page_content, .page-container .page-content.without-sidebar{padding-top:0;     padding-bottom: 00px;}
+.page-container .row {
+     margin-right: 0px; 
+     margin-left: 0px; 
+}
+.page-container .page-head,#page-iphone-x  .web-page-content {
+    margin-bottom: 0;
+}
+
+section.custom{
+   position:relative;
+   width:100%;
+   padding:24px 0;
+}
+section.title-section{
+  border-bottom:1px solid #ddd;
+  padding-bottom:0px;
+}
+.title-section h1{
+   text-align:left;
+   font-size:32px;
+   line-height:40px;
+   margin-top: 0px;
+}
+.phone-section table thead th{
+   font-size:18px;
+}
+a.signup{
+   color:#ef4c23;
+   text-decoration:underline;
+   font-size: 24px;
+}
+.phone-section .block-title{
+    font-size: 2.4rem;
+    margin-top:0;
+    font-weight: 600;
+	    padding-top: 15px;
+    border-top: 1px dashed #bbb;
+}
+.phone-section .block-title span{
+	float:left;
+	max-width:150px;
+    padding: 15px;
+    border-radius: 15px;
+    margin-right: 12px;
+}
+.phone-section .block-title span img{
+	max-width:95%;
+}
+.phone-section ol.number-sec{
+   font-size: 1.5rem;
+    line-height: 1.8;
+    margin-bottom: 1.17647rem;
+    list-style-position: outside;
+    font-family: inherit;
+    padding-left: 0;
+    list-style: none;
+ 
+}
+.phone-section ol.number-sec li{
+counter-increment: counter-incr;
+    padding-left: 28px;
+    position: relative;
+    padding-bottom: 5px;
+}
+.phone-section ol.number-sec li:before {
+    content: counter(counter-incr);
+    font-weight: 700;
+    text-align: center;
+    line-height: 24px;
+    font-size: 14px;
+    color: #fff;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 24px;
+    height: 24px;
+    background-color: #ef3700;
+    background-size: 24px;
+    box-shadow: 1px 1px 0 #ca2f01;
+    border-radius: 50%;
+    text-shadow: 1px 1px 0 #ca2f01;
+}
+
+.bg-grey {
+}
+.block-block-3{
+  padding: 15px;
+    margin-top: 80px;
+   border:1px solid #ddd;
+border-radius: 10px;
+}
+ .block-block-3 ul {
+    margin-left: 0;
+    list-style: none;
+    padding-left:0;
+}
+.block-block-3 ul li {
+    padding-left: 24px;
+    padding-bottom: 10px;
+position:relative;
+}
+.block-block-3  ul li:before {
+    content: "\f046";
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: 20px;
+    color:#ef4c23;
+    text-rendering: auto;
+    position: absolute;
+   left:0;
+   top:2px;
+}
+.block-block-3  ul.secondstyle li:before {
+    content: "\f0a9";
+}
+
+.tab2{
+   margin-top:20px;
+}
+.btn-orange{
+   background-color: #EF3700;
+   border-color:#EF3700;
+}
+.btn-orange:hover, .btn-orange:active, .btn-orange:focus, .btn-orange:visited{
+   background-color: #bf2c00;
+   border-color:#bf2c00;
+}
+.float-left{
+   float: right;
+   margin-top: -10px;
+
+}
+input.error, textarea.error, select.error {
+    border: 1px solid red;
+}
+input.error:focus, input.error:visited, input.error:active {
+	border-color: #ced5db;
+}
+
+label.error {
+    color: red;
+}
+#form-alert > div.alert{
+	margin:0;
+}
+#form-alert .alert-success {
+    color: #ffffff;
+    background-color: #98d85b;
+    border-color: #98d85b;
+}
+#form-alert .alert-success .close, #form-alert .alert-warning .close{
+    opacity:0.6;
+}
+#form-alert .alert-warning {
+    color: #ffffff;
+    background-color: #ef4c23;
+    border-color: #ef4c23;
+}
+</style>
+
+<!-- quickrepair: add css end-->
+
 <script>
+ function nextPrev(text){
+ 	  $("#repair").val(text);
+     $(".tab1").hide();
+     $(".tab2").show();
+  }
+  function prevback(){
+     $(".tab1").show();
+      $("#repair").val('');
+     $(".tab2").hide();
+  }
+
+	{% include "templates/includes/repair_page.js" %}
 	{% include "templates/includes/product_page.js" %}
 
 	{% if variant_info %}
@@ -123,4 +400,101 @@
 	window.variant_info = null;
 	{% endif %}
 </script>
+<script type="text/javascript" src="/assets/frappe/js/lib/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.16.0/jquery.validate.min.js"></script>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		
+		$.getScript('/assets/frappe/js/lib/datepicker/datepicker.min.js', function() {
+		 /*var options={
+			 isRTL: false,
+			format: 'yyyy-mm-dd',
+			todayHighlight: true,
+			autoclose: true,
+			language: 'en'
+		 };
+		 */
+		 $.fn.datepicker.language['en'] = {
+			days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+			daysShort: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+			daysMin: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
+			months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+			monthsShort: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+			today: "Today"
+		};
+		$('#date').datepicker({
+			todayHighlight: true,
+			autoClose: true,
+			language: 'en'
+		});
+	  });
+  // button for sign-up event
+  $('.btn-orange').click(function() {
+    $("#form-alert").toggle(false);
+    $("input,textarea").removeClass('error');
+    var args = {
+        name: $('[id="name"]').val(),        
+        email: $('[id="email"]').val(),
+        phone: $('[id="phone"]').val(),
+        repair: $('[id="repair"]').val(),
+        store: $('[id="store"]').val(),
+        message: $('[id="message"]').val(),
+        date: $('[id="date"]').val(),
+      }
+	  
+	  $.each(args, function( key, value ) {
+		  if(!value){msgerror(key);}
+	  });
+    // all mandatory
+    if(!(args.name && args.email && args.phone
+        && args.repair && args.store && args.message && args.date)) {
+		msgprint('<div class="alert alert-warning alert-dismissable"><button type="button" class="close" data-dismiss="alert">&times;</button>All fields are necessary. Please try again.</div>');
+       return;
+    }
+
+    // email is valid
+    if(!valid_email(args.email)) {
+		msgerror('email');
+        msgprint('<div class="alert alert-warning alert-dismissable"><button type="button" class="close" data-dismiss="alert">&times;</button>Please enter a valid email id</div>');
+        return;
+    }
+
+    // compose the message
+    var message = "Name: " + args.name + "\n"
+        + "Email: " + args.email + "\n"
+        + "Phone: " + args.phone + "\n"
+        + "Repair: " + args.repair + "\n"
+        + "Store: " + args.store + "\n"
+        + "Message: " + args.message + "\n"
+        + "Appointment Date: " + args.date
+
+    frappe.send_message({
+      subject: args.name,
+      sender: $('[id="email"]').val(),
+      status: 'Open',
+      message: message,
+      repair: args.repair,
+      source:'Web Repair Item',
+      callback: function(r) {
+        // print return message
+        msgprint('<div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert">&times;</button>Thanks for your repair order, please visit our store !</div>');
+		    // r.message clear all inputs
+        $(':input').val('');
+      }
+    });
+  });
+
+});
+var msgerror = function(txt) {
+    $("#"+txt).toggleClass('error');
+}
+var msgprint = function(txt) {
+    $("#form-alert").html(txt).toggle(true);
+	 $('html, body').animate({
+        scrollTop: $(".page-container").offset().top
+    }, 2000);
+}
+</script>	
+<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery.validation/1.15.1/jquery.validate.min.js"></script>
 {% endblock %}

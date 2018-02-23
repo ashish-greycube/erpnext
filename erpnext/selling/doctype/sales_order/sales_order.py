@@ -829,5 +829,6 @@ def get_default_bom_item(item_code):
 #quick-repair
 @frappe.whitelist()
 def update_workflow_status(doctype, docname,value_to_set):
+	frappe.db.set_value(doctype, docname, "kanban_column", value_to_set)
 	return frappe.db.set_value(doctype, docname, "workflow_state", value_to_set)
 #quick-repair
