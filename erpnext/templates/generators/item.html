@@ -51,7 +51,7 @@
 						{% for d in repair_item_specification -%}
 							<tr>
 <td >{{ d.repair_item }}</td>						 
-								<td><h4>£{{d.repair_price}}</h4></td>
+								<td><h4>€{{'%0.2f'| format(d.repair_price|float)}}</h4></td>
 								<td><a class="signup" onClick="nextPrev('{{ d.repair_item }}')"><i class="fa fa-arrow-circle-right"></i></a></td>
 							</tr>
 						{%- endfor %}
