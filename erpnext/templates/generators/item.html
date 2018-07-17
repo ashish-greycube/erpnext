@@ -50,9 +50,9 @@
 					          <tbody> 
 						{% for d in repair_item_specification -%}
 							<tr>
-<td >{{ d.repair_item }}</td>						 
+<td style="vertical-align:middle;">{{ d.repair_item }}</td>						 
 								<td><h4>€{{'%0.2f'| format(d.repair_price|float)}}</h4></td>
-								<td><a class="signup" onClick="nextPrev('{{ d.repair_item }}')"><i class="fa fa-arrow-circle-right"></i></a></td>
+								<td style="vertical-align:middle;"><a class="signup" onClick="nextPrev('{{ d.repair_item }}')">Contact</a></td>
 							</tr>
 						{%- endfor %}
 						    </tbody>
@@ -62,7 +62,15 @@
 				{%- endif %}
 		<!-- 		quickrepair -->
                </div>  
-
+<style >
+a.signup {
+    color: #fff !important;
+    text-decoration: none !important;
+    font-size: 14px !important;
+    background: #ef4c23;
+    padding: 5px;
+    border-radius: 5px;
+}</style>
                <div class="tab2" style="display:none;">
                	    <div id="form-alert" class="" style=" margin-bottom: 14px; "></div>
                     <a class="btn btn-default float-left" onClick="prevback()"> << Terug</a>
@@ -437,6 +445,7 @@ label.error {
         name: $('[id="name"]').val(),        
         email: $('[id="email"]').val(),
         phone: $('[id="phone"]').val(),
+		model: $('[itemprop="name"]').text(),
         repair: $('[id="repair"]').val(),
         store: $('[id="store"]').val(),
         message: $('[id="message"]').val(),
@@ -447,7 +456,7 @@ label.error {
 		  if(!value){msgerror(key);}
 	  });
     // all mandatory
-    if(!(args.name && args.email && args.phone
+    if(!(args.name && args.email && args.phone && args.model
         && args.repair && args.store && args.message && args.date)) {
 		msgprint('<div class="alert alert-warning alert-dismissable"><button type="button" class="close" data-dismiss="alert">&times;</button>All fields are necessary. Please try again.</div>');
        return;
@@ -464,6 +473,7 @@ label.error {
     var message = "Name: " + args.name + "\n"
         + "Email: " + args.email + "\n"
         + "Phone: " + args.phone + "\n"
+		+ "Model: " + args.model + "\n"
         + "Repair: " + args.repair + "\n"
         + "Store: " + args.store + "\n"
         + "Message: " + args.message + "\n"
