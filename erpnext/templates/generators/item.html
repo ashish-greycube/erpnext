@@ -52,7 +52,7 @@
 							<tr>
 <td style="vertical-align:middle;">{{ d.repair_item }}</td>						 
 								<td><h4>€{{'%0.2f'| format(d.repair_price|float)}}</h4></td>
-								<td style="vertical-align:middle;"><a class="signup" onClick="nextPrev('{{ d.repair_item }}')">Contact</a></td>
+								<td style="vertical-align:middle;"><a class="signup" onClick="nextPrev('{{ d.repair_item }}')">Maak Afspraak</a></td>
 							</tr>
 						{%- endfor %}
 						    </tbody>
@@ -96,14 +96,29 @@ a.signup {
 			            <option value="vs">Vlaanderenstraat 117, 9000 Gent</option>
 			          </select>
 			        </div>
+					
 			        <div class="form-group">
 			          <label for="message">Uw vraag of opmerking</label>
 			          <textarea class="form-control" id="message" rows="4" placeholder="Uw vraag of opmerking"></textarea>
 			        </div>
 			        <div class="form-group">
 			          <label for="date">Datum</label>
-			          <input type="text" class="form-control" id="date" placeholder="dd.mm.yyyy">
+			          <input type="text" class="form-control" id="date" placeholder="dd.mm.yyyy" autocomplete="off">
                     </div>
+					<div class="form-group">
+			          <label for="timeslot">Tijdslot</label>
+			          <select id="timeslot" class="form-control">
+			            <option value="10:00 - 11:00">10:00 - 11:00</option>
+						<option value="11:00 - 12:00">11:00 - 12:00</option>
+						<option value="12:00 - 13:00">12:00 - 13:00</option>
+						<option value="13:00 - 14:00">13:00 - 14:00</option>
+						<option value="14:00 - 15:00">14:00 - 15:00</option>
+						<option value="15:00 - 16:00">15:00 - 16:00</option>
+						<option value="16:00 - 17:00">16:00 - 17:00</option>
+						<option value="17:00 - 18:00">17:00 - 18:00</option>
+						<option value="18:00 - 19:00">18:00 - 19:00</option>
+			          </select>
+			        </div>
 			        <button type="submit" class="btn btn-primary btn-orange">Verzenden</button>
 			        <a class="btn btn-default" onClick="prevback()">Terug</a> 
 			    </div>
@@ -170,6 +185,8 @@ a.signup {
 			            <li>Scherp geprijsd</li>
 			            <li>Snel & vakkundig</li>
 			          </ul>
+                      <a href="/contact#contactform" class="signup">
+								{{ _("STEL UW VRAAG") }}</a>
 			        </div>
 			      </div>
 			 </div>
@@ -448,8 +465,9 @@ label.error {
 		model: $('[itemprop="name"]').text(),
         repair: $('[id="repair"]').val(),
         store: $('[id="store"]').val(),
-        message: $('[id="message"]').val(),
-        date: $('[id="date"]').val(),
+		timeslot: $('[id="timeslot"]').val(),
+       // message: $('[id="message"]').val(),
+       // date: $('[id="date"]').val(),
       }
 	  
 	  $.each(args, function( key, value ) {
@@ -457,7 +475,7 @@ label.error {
 	  });
     // all mandatory
     if(!(args.name && args.email && args.phone && args.model
-        && args.repair && args.store && args.message && args.date)) {
+        && args.repair && args.store)) {
 		msgprint('<div class="alert alert-warning alert-dismissable"><button type="button" class="close" data-dismiss="alert">&times;</button>All fields are necessary. Please try again.</div>');
        return;
     }
@@ -476,8 +494,9 @@ label.error {
 		+ "Model: " + args.model + "\n"
         + "Repair: " + args.repair + "\n"
         + "Store: " + args.store + "\n"
-        + "Message: " + args.message + "\n"
-        + "Appointment Date: " + args.date
+		+ "Message: " + args.message + "\n"
+        + "Appointment Date: " + args.date  + "\n"
+		+ "Time Slot: " + args.timeslot
 
     frappe.send_message({
       subject: args.name,
@@ -488,6 +507,7 @@ label.error {
       source:'Web Repair Item',
       callback: function(r) {
         // print return message
+		window.location.href = "/thank-you";
         msgprint('<div class="alert alert-success alert-dismissable"><button type="button" class="close" data-dismiss="alert">&times;</button>Thanks for your repair order, please visit our store !</div>');
 		    // r.message clear all inputs
         $(':input').val('');
