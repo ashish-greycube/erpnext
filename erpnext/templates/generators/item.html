@@ -464,7 +464,7 @@ label.error {
         phone: $('[id="phone"]').val(),
 		model: $('[itemprop="name"]').text(),
         repair: $('[id="repair"]').val(),
-        store: $('[id="store"]').val(),
+        store: $('[id="store"]').text().trim(),
 		timeslot: $('[id="timeslot"]').val(),
 		message: $('[id="message"]').val(),
         date: $('[id="date"]').val()
@@ -490,13 +490,13 @@ label.error {
     // compose the message
     var message = "Name: " + args.name + "\n"
         + "Email: " + args.email + "\n"
-        + "Phone: " + args.phone + "\n"
+        + "Telefoon: " + args.phone + "\n"
 		+ "Model: " + args.model + "\n"
-        + "Repair: " + args.repair + "\n"
-        + "Store: " + args.store + "\n"
-		+ "Message: " + args.message + "\n"
-        + "Appointment Date: " + args.date  + "\n"
-		+ "Time Slot: " + args.timeslot
+        + "Herstelling: " + args.repair + "\n"
+        + "Winkel: " + args.store + "\n"
+		+ "Opmerking: " + args.message + "\n"
+        + "Datum: " + args.date  + "\n"
+		+ "Tijdslot: " + args.timeslot
 
     frappe.send_message({
       subject: args.name,
