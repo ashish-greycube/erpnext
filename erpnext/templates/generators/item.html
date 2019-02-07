@@ -70,7 +70,24 @@ a.signup {
     background: #ef4c23;
     padding: 5px;
     border-radius: 5px;
-}</style>
+}
+.shopping_cart{
+	margin-top:12px;
+}
+.shopping_cart a{ color: #fff !important;
+    text-decoration: none !important;
+    font-size: 18px ;
+    background: #ef4c23;
+    padding: 5px;
+    border-radius: 5px;
+	text-align:center;
+	display:block;
+}
+.shopping_cart a i{
+	font-size:28px;
+	vertical-align: middle;
+}
+</style>
                <div class="tab2" style="display:none;">
                	    <div id="form-alert" class="" style=" margin-bottom: 14px; "></div>
                     <a class="btn btn-default float-left" onClick="prevback()"> << Terug</a>
@@ -93,7 +110,8 @@ a.signup {
 			        <div class="form-group">
 			          <label for="store">Welke winkel wilt u langskomen?</label>
 			          <select id="store" class="form-control">
-			            <option value="vs">Vlaanderenstraat 117, 9000 Gent</option>
+			            <option value="Vlaanderenstraat 117, 9000 Gent">Vlaanderenstraat 117, 9000 Gent</option>
+                        <option value="Ouden Dendermondsesteenweg 1, 9300 Aalst">Ouden Dendermondsesteenweg 1, 9300 Aalst</option>
 			          </select>
 			        </div>
 					
@@ -189,6 +207,9 @@ a.signup {
 								{{ _("STEL UW VRAAG") }}</a>
 			        </div>
 			      </div>
+                  <div class="shopping_cart">
+                  	<a href="https://www.quick-repairshop.be/" target="_blank"> <i class="fa fa-shopping-cart"></i> {{ _("Online Shopping") }} </a>
+                  </div>
 			 </div>
 			<!-- quickrepair: add side-section end html-->
 			
@@ -464,7 +485,7 @@ label.error {
         phone: $('[id="phone"]').val(),
 		model: $('[itemprop="name"]').text(),
         repair: $('[id="repair"]').val(),
-        store: $('[id="store"]').text().trim(),
+        store: $('[id="store"]').find(":selected").text().trim(),
 		timeslot: $('[id="timeslot"]').val(),
 		message: $('[id="message"]').val(),
         date: $('[id="date"]').val()
