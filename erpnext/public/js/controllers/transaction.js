@@ -443,7 +443,8 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 							uom : item.uom,
 							stock_uom: item.stock_uom,
 							pos_profile: me.frm.doc.doctype == 'Sales Invoice' ? me.frm.doc.pos_profile : '',
-							cost_center: item.cost_center
+							cost_center: item.cost_center,
+							coupon_code: me.frm.doc.coupon_code
 						}
 					},
 
@@ -1053,31 +1054,19 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 		this.calculate_taxes_and_totals();
 	},
 
+	coupon_code: function(doc, cdt, cdn) {
+		console.log("hi");
+		var me = this;
+		frappe.run_serially([
+			() => me.remove_pricing_rule(),
+			() => me.apply_pricing_rule(frappe.get_doc(cdt, cdn), true)
+		])
+		.catch(console.log)
+	},
+
 	ignore_pricing_rule: function() {
 		if(this.frm.doc.ignore_pricing_rule) {
-			var me = this;
-			var item_list = [];
-
-			$.each(this.frm.doc["items"] || [], function(i, d) {
-				if (d.item_code) {
-					item_list.push({
-						"doctype": d.doctype,
-						"name": d.name,
-						"pricing_rule": d.pricing_rule
-					})
-				}
-			});
-			return this.frm.call({
-				method: "erpnext.accounts.doctype.pricing_rule.pricing_rule.remove_pricing_rules",
-				args: { item_list: item_list },
-				callback: function(r) {
-					if (!r.exc && r.message) {
-						me._set_values_for_item_list(r.message);
-						me.calculate_taxes_and_totals();
-						if(me.frm.doc.apply_discount_on) me.frm.trigger("apply_discount_on");
-					}
-				}
-			});
+			this.remove_pricing_rule();
 		} else {
 			this.apply_pricing_rule();
 		}
@@ -1099,6 +1088,32 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 					if(item) me.set_gross_profit(item);
 					if(calculate_taxes_and_totals) me.calculate_taxes_and_totals();
 					if(me.frm.doc.apply_discount_on) me.frm.trigger("apply_discount_on")
+				}
+			}
+		});
+	},
+
+	remove_pricing_rule: function() {
+		var me = this;
+		var item_list = [];
+		$.each(this.frm.doc["items"] || [], function (i, d) {
+			if (d.item_code) {
+				item_list.push({
+					"doctype": d.doctype,
+					"name": d.name,
+					"pricing_rule": d.pricing_rule
+				});
+			}
+		});
+		return this.frm.call({
+			method: "erpnext.accounts.doctype.pricing_rule.pricing_rule.remove_pricing_rules",
+			args: { item_list: item_list },
+			callback: function (r) {
+				if (!r.exc && r.message) {
+					me._set_values_for_item_list(r.message);
+					me.calculate_taxes_and_totals();
+					if (me.frm.doc.apply_discount_on)
+						me.frm.trigger("apply_discount_on");
 				}
 			}
 		});
@@ -1128,7 +1143,8 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 			"is_return": cint(me.frm.doc.is_return),
 			"update_stock": in_list(['Sales Invoice', 'Purchase Invoice'], me.frm.doc.doctype) ? cint(me.frm.doc.update_stock) : 0,
 			"conversion_factor": me.frm.doc.conversion_factor,
-			"pos_profile": me.frm.doc.doctype == 'Sales Invoice' ? me.frm.doc.pos_profile : ''
+			"pos_profile": me.frm.doc.doctype == 'Sales Invoice' ? me.frm.doc.pos_profile : '',
+			"coupon_code": me.frm.doc.coupon_code
 		};
 	},
 
