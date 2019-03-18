@@ -127,11 +127,14 @@ def make_sales_order(source_name, target_doc=None):
 
 def _make_sales_order(source_name, target_doc=None, ignore_permissions=False):
 	customer = _make_customer(source_name, ignore_permissions)
-
 	def set_missing_values(source, target):
 		if customer:
 			target.customer = customer.name
 			target.customer_name = customer.customer_name
+		if source.coupon_code:
+			target.coupon_code = source.coupon_code
+		if source.referral_sales_partner:
+			target.sales_partner=source.referral_sales_partner
 		target.ignore_pricing_rule = 1
 		target.flags.ignore_permissions = ignore_permissions
 		target.run_method("set_missing_values")

@@ -5,6 +5,41 @@
 frappe.provide("erpnext.shopping_cart");
 var shopping_cart = erpnext.shopping_cart;
 
+var setCookie = function (cname, cvalue, exdays) {
+	var d = new Date();
+	d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+	var expires = "expires="+d.toUTCString();
+	document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  }
+  
+var getCookie = function (cname) {
+	var name = cname + "=";
+	var ca = document.cookie.split(';');
+	for(var i = 0; i < ca.length; i++) {
+	  var c = ca[i];
+	  while (c.charAt(0) == ' ') {
+		c = c.substring(1);
+	  }
+	  if (c.indexOf(name) == 0) {
+		return c.substring(name.length, c.length);
+	  }
+	}
+	return "";
+  }
+
+  var getParams = function (url) {
+	var params = [];
+	var parser = document.createElement('a');
+	parser.href = url;
+	var query = parser.search.substring(1);
+	var vars = query.split('&');
+	for (var i = 0; i < vars.length; i++) {
+		var pair = vars[i].split('=');
+		params[pair[0]] = decodeURIComponent(pair[1]);
+	}
+	return params;
+};
+
 frappe.ready(function() {
 	var full_name = frappe.session && frappe.session.user_fullname;
 	// update user
@@ -12,7 +47,24 @@ frappe.ready(function() {
 		$('.navbar li[data-label="User"] a')
 			.html('<i class="fa fa-fixed-width fa fa-user"></i> ' + full_name);
 	}
+	console.log('inside cart')
+	var referral_coupon_code=getParams(window.location.href)['cc']
+	var referral_sales_partner=getParams(window.location.href)['sp']
+	if (referral_coupon_code) {
+		setCookie("referral_coupon_code",referral_coupon_code,0.02)
+	}
+	if (referral_sales_partner) {
+		setCookie("referral_sales_partner",referral_sales_partner,0.02)
+	}
+	referral_coupon_code=getCookie("referral_coupon_code")
+	referral_sales_partner=getCookie("referral_sales_partner")
 
+	if (referral_coupon_code) {
+		$(".txtcoupon").val(referral_coupon_code);
+	}
+	if (referral_sales_partner) {
+		$(".txtreferral_sales_partner").val(referral_sales_partner);
+	}
 	// update login
 	shopping_cart.show_shoppingcart_dropdown();
 	shopping_cart.set_cart_count();

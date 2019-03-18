@@ -49,6 +49,27 @@ def get_cart_quotation(doc=None):
 	}
 
 @frappe.whitelist()
+def apply_coupon_code(applied_code,applied_referral_sales_partner):
+	quotation = True
+	if applied_code:
+		coupon_list=frappe.get_list('Coupon Code', filters={'docstatus': 0, 'coupon_code':applied_code }, fields=['name'])
+		if coupon_list:
+			quotation = _get_cart_quotation()
+			coupon_name=coupon_list[0].name
+			frappe.set_value("Quotation", quotation.name, "coupon_code",coupon_name)
+			if applied_referral_sales_partner:
+				sales_partner_list=frappe.get_list('Sales Partner', filters={'docstatus': 0, 'referral_code':applied_referral_sales_partner }, fields=['name'])
+				if sales_partner_list:
+					sales_partner_name=sales_partner_list[0].name
+					frappe.set_value("Quotation", quotation.name, "referral_sales_partner",sales_partner_name)
+		else:
+			frappe.throw(_("Please enter valid coupon code !!"))
+	else:
+		frappe.throw(_("Please enter coupon code !!"))
+
+	return quotation
+
+@frappe.whitelist()
 def place_order():
 	quotation = _get_cart_quotation()
 	quotation.company = frappe.db.get_value("Shopping Cart Settings", None, "company")

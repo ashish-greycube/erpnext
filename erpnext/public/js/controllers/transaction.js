@@ -1055,7 +1055,7 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 	},
 
 	coupon_code: function(doc, cdt, cdn) {
-		console.log("hi");
+		console.log("coupon_code");
 		var me = this;
 		frappe.run_serially([
 			() => me.remove_pricing_rule(),

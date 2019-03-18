@@ -18,8 +18,29 @@ $.extend(shopping_cart, {
 		shopping_cart.bind_place_order();
 		shopping_cart.bind_change_qty();
 		shopping_cart.bind_dropdown_cart_buttons();
+		shopping_cart.bind_coupon_code();
 	},
-
+	bind_coupon_code: function() {
+		$(".bt-coupon").on("click", function() {
+			shopping_cart.apply_coupon_code(this);
+		});
+	},
+	apply_coupon_code: function(btn) {
+		return frappe.call({
+			type: "POST",
+			method: "erpnext.shopping_cart.cart.apply_coupon_code",
+			btn: btn,
+			args : {
+				applied_code : $('.txtcoupon').val(),
+				applied_referral_sales_partner: $('.txtreferral_sales_partner').val()
+			},
+			callback: function(r) {
+				if (r && r.message){
+					location.reload();
+				}
+			}
+		});
+	},
 	bind_address_select: function() {
 		$(".cart-addresses").find('input[data-address-name]').on("click", function() {
 			if($(this).prop("checked")) {
@@ -158,6 +179,7 @@ $.extend(shopping_cart, {
 });
 
 frappe.ready(function() {
+	$(".btn-coupon").click();
 	$(".cart-icon").hide();
 	shopping_cart.bind_events();
 });
