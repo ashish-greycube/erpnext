@@ -312,10 +312,8 @@ def get_pricing_rules(args):
 
 def filter_pricing_rules(args, pricing_rules):
 	# filter for qty
-	print (pricing_rules)
 	coupon_pricing_rule = None
 	if pricing_rules and args.coupon_code:
-		print (args.coupon_code)
 		coupon_pricing_rule = frappe.get_value("Coupon Code", args.coupon_code, "pricing_rule")
 		print (coupon_pricing_rule)
 		pricing_rules = [d for d in pricing_rules if d.coupon_code_based and d.name == coupon_pricing_rule]

@@ -1055,11 +1055,10 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 	},
 
 	coupon_code: function(doc, cdt, cdn) {
-		console.log("coupon_code");
 		var me = this;
 		frappe.run_serially([
 			() => me.remove_pricing_rule(),
-			() => me.apply_pricing_rule(frappe.get_doc(cdt, cdn), true)
+			() => me.apply_pricing_rule()
 		])
 		.catch(console.log)
 	},
@@ -1075,10 +1074,13 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 	apply_pricing_rule: function(item, calculate_taxes_and_totals) {
 		var me = this;
 		var args = this._get_args(item);
-		if (!(args.items && args.items.length)) {
-			if(calculate_taxes_and_totals) me.calculate_taxes_and_totals();
-			return;
-		}
+		console.log(args)
+		console.log(!(args.items && args.items.length))
+		console.log(args.items.length)
+		// if (!(args.items && args.items.length)) {
+		// 	if(calculate_taxes_and_totals) me.calculate_taxes_and_totals();
+		// 	return;
+		// }
 		return this.frm.call({
 			method: "erpnext.accounts.doctype.pricing_rule.pricing_rule.apply_pricing_rule",
 			args: {	args: args },
@@ -1097,7 +1099,7 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 		var me = this;
 		var item_list = [];
 		$.each(this.frm.doc["items"] || [], function (i, d) {
-			if (d.item_code) {
+			if (d.item_code && d.pricing_rule) {
 				item_list.push({
 					"doctype": d.doctype,
 					"name": d.name,
@@ -1143,8 +1145,8 @@ erpnext.TransactionController = erpnext.taxes_and_totals.extend({
 			"is_return": cint(me.frm.doc.is_return),
 			"update_stock": in_list(['Sales Invoice', 'Purchase Invoice'], me.frm.doc.doctype) ? cint(me.frm.doc.update_stock) : 0,
 			"conversion_factor": me.frm.doc.conversion_factor,
-			"pos_profile": me.frm.doc.doctype == 'Sales Invoice' ? me.frm.doc.pos_profile : '',
-			"coupon_code": me.frm.doc.coupon_code
+			"coupon_code": me.frm.doc.coupon_code,
+			"pos_profile": me.frm.doc.doctype == 'Sales Invoice' ? me.frm.doc.pos_profile : ''
 		};
 	},
 

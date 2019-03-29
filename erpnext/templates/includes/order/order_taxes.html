@@ -1,19 +1,28 @@
 {% if doc.taxes %}
-<div class="row tax-net-total-row">
-    <div class="col-xs-6 text-right">{{ _("Net Total") }}</div>
-    <div class="col-xs-6 text-right">
-        {{ doc.get_formatted("net_total") }}</div>
-</div>
+<tr>
+	<td class="text-right" colspan="2">
+		{{ _("Net Total") }}
+	</td>
+	<td class="text-right">
+		{{ doc.get_formatted("net_total") }}
+	</td>
+</tr>
 {% endif %}
+
 {% for d in doc.taxes %}
 {% if d.base_tax_amount > 0 %}
-<div class="row tax-row">
-    <div class="col-xs-6 text-right">{{ d.description }}</div>
-    <div class="col-xs-6 text-right">
-        {{ d.get_formatted("base_tax_amount") }}</div>
-</div>
+<tr>
+	<td class="text-right" colspan="2">
+		{{ d.description }}
+	</td>
+	<td class="text-right">
+		{{ d.get_formatted("base_tax_amount") }}
+	</td>
+</tr>
 {% endif %}
 {% endfor %}
+
+
 {% if doc.doctype == 'Quotation' %}
 <div class="row tax-grand-total-row">
     <div class="col-xs-6 text-right text-uppercase h6 text-muted">{{
@@ -23,11 +32,12 @@
         fields=["symbol"], filters={ "currency_name":doc.currency}) -%}
             <span>{{ row.symbol }}</span>
         {% endfor %}
-        {% set tot_quotation_discount = 0.0 %}
+        {% set tot_quotation_discount = [] %}
         {%- for item in doc.items -%}
-            {{ tot_quotation_discount + (((item.price_list_rate * item.qty)
-        * item.discount_percentage) / 100) }}
-        {% endfor %}
+        {% if tot_quotation_discount.append((((item.price_list_rate * item.qty)
+            * item.discount_percentage) / 100)) %}{% endif %}
+         {% endfor %}
+         {{_("{0}").format(tot_quotation_discount | sum)}}
     </div>
 </div>
 {% endif %}
@@ -41,10 +51,11 @@
             fields=["symbol"], filters={ "currency_name":doc.currency}) -%}
                 <span>{{ row.symbol }}</span>
             {% endfor %}
-            {%- set total_amount = 0.0 -%}
+            {% set total_amount = [] %}
             {%- for item in doc.items -%}
-                {{ total_amount + (item.price_list_rate * item.qty) }}
+            {% if total_amount.append((item.price_list_rate * item.qty)) %}{% endif %}
             {% endfor %}
+            {{_("{0}").format(total_amount | sum)}}
         </span>
     </div>
 </div>
@@ -59,11 +70,13 @@
             fields=["symbol"], filters={ "currency_name":doc.currency}) -%}
                 <span>{{ row.symbol }}</span>
             {% endfor %}
-            {% set tot_sale_discount = 0.0 %}
+            {% set tot_sale_discount = [] %}
             {%- for item in doc.items -%}
-                {{ tot_sale_discount + (((item.price_list_rate * item.qty)
-            * item.discount_percentage) / 100) }}
+            {% if tot_sale_discount.append((((item.price_list_rate * item.qty)
+                * item.discount_percentage) / 100)) %}{% endif %}
+           
             {% endfor %}
+            {{_("{0}").format(tot_sale_discount | sum )}}
         </span>
     </div>
 </div>
