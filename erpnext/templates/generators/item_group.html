@@ -18,9 +18,6 @@
 		{% if slideshow %}<!-- slideshow -->
 		{% include "templates/includes/slideshow.html" %}
 		{% endif %}
-		{% if description %}<!-- description -->
-		<div itemprop="description">{{ description or ""}}</div>
-		{% endif %}
 	</div>
 	<div>
 		{% if items %}
@@ -43,6 +40,11 @@
 			<a class="btn btn-default" href="/{{ pathname }}?start={{ frappe.form_dict.start|int + page_length }}">{{ _("Next") }}</a>
 			{% endif %}
 		</div>
+<!-- quickrepair: add description-->
+		{% if description %}<!-- description -->
+		<div itemprop="description">{{ description or ""}}</div>
+		{% endif %}
+<!-- quickrepair: add description-->
 		{% else %}
 			<div class="text-muted">{{ _("No items listed") }}.</div>
 		{% endif %}

@@ -214,6 +214,20 @@ a.signup {
 			<!-- quickrepair: add side-section end html-->
 			
 		</div>
+
+<!-- quickrepair: add description-->
+{% if web_long_description -%}
+		 <div class="row item-website-description" style="margin-top:30px; margin-bottom:20px">
+			<div class="col-md-12">
+		<div class="h6 text-uppercase">{{ _("Description") }}</div>
+		<div itemprop="description" class="item-desc">
+		{{ web_long_description }}
+		</div>
+		</div>
+		</div>
+{%- endif %}
+<!-- quickrepair: add description-->
+
 		<!-- quickrepair: add section2 start html-->
 		<section class="custom  phone-section">
 		  <div class="row">
